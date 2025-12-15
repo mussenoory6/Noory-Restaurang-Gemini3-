@@ -2,7 +2,8 @@ import React, { useState, useEffect, createContext, useContext } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, CalendarRange, ShoppingCart, Users, Menu as MenuIcon, 
-  Settings, LogOut, Sun, Moon, Bell, CheckSquare, BarChart3, Star, Package
+  Settings, LogOut, Sun, Moon, Bell, CheckSquare, BarChart3, Star, Package,
+  Search, ChevronRight, MapPin, Clock, MoreHorizontal
 } from 'lucide-react';
 import { User, MenuItem } from './types';
 import { Button, Input, Card, Toast, Badge, Modal } from './components/UI';
@@ -35,13 +36,13 @@ const SidebarItem = ({ icon: Icon, label, path, active }: any) => {
   return (
     <button
       onClick={() => navigate(path)}
-      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+      className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm transition-all duration-200 ${
         active 
-        ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-white' 
-        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800'
+        ? 'bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white font-bold' 
+        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium'
       }`}
     >
-      <Icon size={18} />
+      <Icon size={20} strokeWidth={active ? 2.5 : 2} />
       {label}
     </button>
   );
@@ -53,39 +54,48 @@ const Sidebar = () => {
   const p = location.pathname;
 
   return (
-    <div className="w-64 h-screen bg-white dark:bg-dark-card border-r border-slate-200 dark:border-dark-border flex flex-col fixed left-0 top-0 z-10 transition-colors">
-      <div className="p-6">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-8 h-8 bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center">
-             <span className="text-white dark:text-slate-900 font-bold text-lg">N</span>
+    <div className="w-72 h-screen bg-white dark:bg-dark-card border-r border-gray-100 dark:border-dark-border flex flex-col fixed left-0 top-0 z-20">
+      <div className="p-8 pb-4">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-md">
+             <span className="text-white font-bold text-xl">N</span>
           </div>
-          <span className="font-bold text-lg tracking-tight dark:text-white">Noory</span>
+          <span className="font-extrabold text-2xl tracking-tight text-primary dark:text-white">Noory</span>
         </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 truncate pl-10">{restaurantName || 'Restaurant OS'}</p>
-      </div>
-
-      <div className="flex-1 px-3 space-y-1 overflow-y-auto">
-        <div className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Översikt</div>
-        <SidebarItem icon={LayoutDashboard} label="Dashboard" path="/dashboard" active={p === '/dashboard'} />
-        <SidebarItem icon={CalendarRange} label="Bokning & Bord" path="/bookings" active={p === '/bookings'} />
-        <SidebarItem icon={ShoppingCart} label="Kassa (POS)" path="/pos" active={p === '/pos'} />
         
-        <div className="mt-6 px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Drift</div>
-        <SidebarItem icon={MenuIcon} label="Meny & Dryck" path="/menu" active={p === '/menu'} />
-        <SidebarItem icon={Users} label="Personal & Schema" path="/staff" active={p === '/staff'} />
-        <SidebarItem icon={Package} label="Lager & Inköp" path="/inventory" active={p === '/inventory'} />
-        <SidebarItem icon={CheckSquare} label="Checklistor" path="/tasks" active={p === '/tasks'} />
-
-        <div className="mt-6 px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Analys</div>
-        <SidebarItem icon={BarChart3} label="Rapporter" path="/reports" active={p === '/reports'} />
-        <SidebarItem icon={Star} label="Marknadsföring" path="/marketing" active={p === '/marketing'} />
-        <SidebarItem icon={Settings} label="Inställningar" path="/settings" active={p === '/settings'} />
+        {/* Restaurant Selector / Info */}
+        <div className="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 dark:border-dark-border cursor-pointer hover:shadow-soft transition-shadow">
+          <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+            <span className="font-bold text-gray-900 dark:text-white">BN</span>
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <p className="font-bold text-sm truncate dark:text-white">{restaurantName || 'Restaurant OS'}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Premium Plan</p>
+          </div>
+          <ChevronRight size={16} className="text-gray-400" />
+        </div>
       </div>
 
-      <div className="p-4 border-t border-slate-200 dark:border-dark-border">
-        <button onClick={logout} className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm font-medium w-full px-2 py-2">
-          <LogOut size={16} />
-          Logga ut
+      <div className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+        <div className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest mt-2">Main</div>
+        <SidebarItem icon={LayoutDashboard} label="Dashboard" path="/dashboard" active={p === '/dashboard'} />
+        <SidebarItem icon={CalendarRange} label="Bookings" path="/bookings" active={p === '/bookings'} />
+        <SidebarItem icon={ShoppingCart} label="Point of Sale" path="/pos" active={p === '/pos'} />
+        
+        <div className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest mt-6">Manage</div>
+        <SidebarItem icon={MenuIcon} label="Menu" path="/menu" active={p === '/menu'} />
+        <SidebarItem icon={Users} label="Staff" path="/staff" active={p === '/staff'} />
+        <SidebarItem icon={Package} label="Inventory" path="/inventory" active={p === '/inventory'} />
+
+        <div className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest mt-6">Insights</div>
+        <SidebarItem icon={BarChart3} label="Reports" path="/reports" active={p === '/reports'} />
+        <SidebarItem icon={Settings} label="Settings" path="/settings" active={p === '/settings'} />
+      </div>
+
+      <div className="p-4 border-t border-gray-100 dark:border-dark-border">
+        <button onClick={logout} className="flex items-center gap-3 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white text-sm font-semibold w-full px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all">
+          <LogOut size={20} />
+          Log out
         </button>
       </div>
     </div>
@@ -94,30 +104,48 @@ const Sidebar = () => {
 
 const Topbar = () => {
   const { toggleTheme, darkMode, user } = useApp();
+  const location = useLocation();
+
+  // Get current page title
+  const getTitle = () => {
+    const path = location.pathname.substring(1);
+    return path.charAt(0).toUpperCase() + path.slice(1) || 'Dashboard';
+  };
+
   return (
-    <div className="h-16 bg-white/80 dark:bg-dark-card/80 backdrop-blur-md border-b border-slate-200 dark:border-dark-border fixed top-0 right-0 left-64 z-10 px-8 flex items-center justify-between transition-colors">
-      <div className="flex items-center gap-4">
-        <span className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
-          Sales Demo Mode
-        </span>
+    <div className="h-20 bg-white/90 dark:bg-dark-card/90 backdrop-blur-md border-b border-gray-100 dark:border-dark-border fixed top-0 right-0 left-72 z-10 px-8 flex items-center justify-between">
+      <div className="flex items-center gap-6">
+         {/* Search Bar - Airbnb Style */}
+         <div className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-800 rounded-full border border-transparent focus-within:bg-white focus-within:border-gray-300 focus-within:shadow-soft transition-all w-80">
+            <Search size={18} className="text-gray-500" />
+            <input 
+              type="text" 
+              placeholder={`Search ${getTitle()}...`} 
+              className="bg-transparent border-none outline-none text-sm w-full font-medium placeholder-gray-500 dark:text-white"
+            />
+         </div>
       </div>
+
       <div className="flex items-center gap-4">
-        <button onClick={toggleTheme} className="p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-full transition-colors">
+        <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/10 rounded-full transition-colors">
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
-        <button className="p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-full transition-colors relative">
+        <button className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/10 rounded-full transition-colors relative">
           <Bell size={20} />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+          <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-white dark:border-dark-card"></span>
         </button>
-        <div className="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-dark-border">
+        
+        <div className="h-8 w-[1px] bg-gray-200 dark:bg-gray-700 mx-2"></div>
+
+        <button className="flex items-center gap-3 pl-2 hover:opacity-80 transition-opacity">
           <div className="text-right hidden sm:block">
-            <p className="text-sm font-medium dark:text-white">{user?.name || 'User'}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">{user?.role}</p>
+            <p className="text-sm font-bold text-gray-900 dark:text-white">{user?.name || 'User'}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium capitalize">{user?.role}</p>
           </div>
-          <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-sm font-bold dark:text-white">
-            {user?.name.charAt(0)}
+          <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-sm font-bold dark:text-white overflow-hidden">
+             {user?.name ? user.name.charAt(0) : 'U'}
           </div>
-        </div>
+        </button>
       </div>
     </div>
   );
@@ -125,10 +153,10 @@ const Topbar = () => {
 
 const Layout = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-dark-bg transition-colors">
+    <div className="min-h-screen bg-white dark:bg-dark-bg transition-colors font-sans text-gray-800">
       <Sidebar />
       <Topbar />
-      <main className="ml-64 pt-20 p-8 min-h-screen transition-all">
+      <main className="ml-72 pt-20 p-10 min-h-screen max-w-[1600px] mx-auto">
         {children}
       </main>
     </div>
@@ -149,41 +177,46 @@ const AuthPage = () => {
     setTimeout(() => {
       const role = email.includes('admin') ? 'admin' : 'staff';
       login(email, role);
-      showToast(`Välkommen tillbaka, ${role === 'admin' ? 'Ägare' : 'Personal'}!`);
+      showToast(`Welcome back, ${role === 'admin' ? 'Owner' : 'Staff'}!`);
       setLoading(false);
     }, 800);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-dark-bg p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-           <div className="w-12 h-12 bg-slate-900 dark:bg-white rounded-xl flex items-center justify-center mx-auto mb-4">
-             <span className="text-white dark:text-slate-900 font-bold text-2xl">N</span>
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-dark-bg p-4 relative overflow-hidden">
+      {/* Abstract Background Shapes */}
+      <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-rose-100 dark:bg-rose-900/20 rounded-full blur-3xl opacity-50"></div>
+      <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-teal-100 dark:bg-teal-900/20 rounded-full blur-3xl opacity-50"></div>
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="text-center mb-10">
+           <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-rose-200 dark:shadow-none rotate-3">
+             <span className="text-white font-extrabold text-3xl">N</span>
           </div>
-          <h1 className="text-2xl font-bold dark:text-white">Noory Restaurant OS</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">Logga in på din arbetsyta</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Welcome to Noory</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-3 text-lg">The premium OS for modern restaurants.</p>
         </div>
         
-        <Card>
-          <form onSubmit={handleLogin} className="space-y-4">
+        <Card className="shadow-floating border-none">
+          <form onSubmit={handleLogin} className="space-y-6">
             <Input 
-              label="E-post" 
+              label="Email" 
               value={email} 
               onChange={(e: any) => setEmail(e.target.value)} 
+              className="text-lg"
             />
             <Input 
-              label="Lösenord" 
+              label="Password" 
               type="password" 
               value={password} 
               onChange={(e: any) => setPassword(e.target.value)} 
             />
-            <Button fullWidth disabled={loading}>
-              {loading ? 'Loggar in...' : 'Logga in'}
+            <Button fullWidth variant="primary" disabled={loading} className="py-4 text-base">
+              {loading ? 'Logging in...' : 'Continue'}
             </Button>
-            <div className="text-center mt-4 text-xs text-slate-400">
+            <div className="text-center mt-6 text-sm text-gray-400">
               <p>Demo Admin: admin@demo.se / demo123</p>
-              <p>Demo Personal: staff@demo.se / demo123</p>
+              <p>Demo Staff: staff@demo.se / demo123</p>
             </div>
           </form>
         </Card>
@@ -202,96 +235,99 @@ const OnboardingWizard = () => {
     else {
       setRestaurantName(name);
       completeOnboarding();
-      showToast("Din restaurang är nu konfigurerad!");
+      showToast("Restaurant setup complete!");
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white dark:bg-dark-bg flex items-center justify-center p-6">
       <div className="w-full max-w-2xl">
-        <div className="mb-8 flex justify-between items-center px-2">
-          <div className="flex gap-2">
+        <div className="mb-10 px-2">
+           <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-6">Let's set up your space</h1>
+          <div className="flex gap-3">
             {[1, 2, 3, 4].map(s => (
-              <div key={s} className={`h-2 w-16 rounded-full ${s <= step ? 'bg-slate-900 dark:bg-white' : 'bg-slate-200 dark:bg-slate-700'}`} />
+              <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors duration-500 ${s <= step ? 'bg-gray-900 dark:bg-white' : 'bg-gray-200 dark:bg-gray-800'}`} />
             ))}
           </div>
-          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Steg {step} av 4</span>
         </div>
 
-        <Card>
-          <div className="min-h-[300px] flex flex-col">
+        <Card className="shadow-floating border-none p-10 min-h-[450px] flex flex-col justify-between">
             {step === 1 && (
-              <div className="animate-fade-in space-y-4">
-                <h2 className="text-2xl font-bold dark:text-white">Berätta om din restaurang</h2>
-                <p className="text-slate-500 dark:text-slate-400">Vi sätter upp grunden för ditt system.</p>
-                <div className="space-y-4 mt-6">
-                  <Input label="Restaurangnamn" value={name} onChange={(e: any) => setName(e.target.value)} />
-                  <Input label="Adress" placeholder="Storgatan 1, Stockholm" />
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input label="Öppettider (Vardag)" placeholder="11:00 - 22:00" />
-                    <Input label="Telefon" placeholder="08-123 45 67" />
-                  </div>
+              <div className="animate-fade-in space-y-6">
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">What's the name of your place?</h2>
+                    <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg">This will be visible on your receipts and booking page.</p>
+                </div>
+                <div className="space-y-6 mt-8">
+                  <Input label="Restaurant Name" value={name} onChange={(e: any) => setName(e.target.value)} placeholder="e.g. The Nordic Table" />
+                  <Input label="Address" placeholder="Street address, City" />
                 </div>
               </div>
             )}
             
             {step === 2 && (
-              <div className="animate-fade-in space-y-4">
-                <h2 className="text-2xl font-bold dark:text-white">Meny & Prissättning</h2>
-                <p className="text-slate-500 dark:text-slate-400">Importera din meny eller börja från en mall.</p>
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                   <div className="border border-slate-200 dark:border-dark-border p-4 rounded-lg cursor-pointer hover:border-slate-900 dark:hover:border-white transition-colors bg-slate-50 dark:bg-slate-800">
-                      <div className="font-bold mb-1 dark:text-white">Fine Dining Mall</div>
-                      <p className="text-xs text-slate-500">Förrätter, Varmrätter, Avsmakning</p>
+              <div className="animate-fade-in space-y-6">
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Choose your style</h2>
+                    <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg">We'll adapt the menu template for you.</p>
+                </div>
+                <div className="grid grid-cols-2 gap-6 mt-8">
+                   <div className="border-2 border-gray-100 dark:border-gray-700 p-6 rounded-2xl cursor-pointer hover:border-gray-900 dark:hover:border-white transition-all bg-gray-50 dark:bg-gray-800/50">
+                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-2xl">🍷</div>
+                      <div className="font-bold text-lg text-gray-900 dark:text-white">Fine Dining</div>
+                      <p className="text-sm text-gray-500 mt-2">Course-based, extensive wine list.</p>
                    </div>
-                   <div className="border border-slate-200 dark:border-dark-border p-4 rounded-lg cursor-pointer hover:border-slate-900 dark:hover:border-white transition-colors bg-white dark:bg-dark-card">
-                      <div className="font-bold mb-1 dark:text-white">Bistro / Casual</div>
-                      <p className="text-xs text-slate-500">Burgare, Sallader, Snacks</p>
+                   <div className="border-2 border-gray-100 dark:border-gray-700 p-6 rounded-2xl cursor-pointer hover:border-gray-900 dark:hover:border-white transition-all bg-gray-50 dark:bg-gray-800/50">
+                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-2xl">🍔</div>
+                      <div className="font-bold text-lg text-gray-900 dark:text-white">Casual Bistro</div>
+                      <p className="text-sm text-gray-500 mt-2">A la carte, quick service.</p>
                    </div>
                 </div>
               </div>
             )}
 
             {step === 3 && (
-              <div className="animate-fade-in space-y-4">
-                 <h2 className="text-2xl font-bold dark:text-white">Lägg till nyckelpersoner</h2>
-                 <p className="text-slate-500 dark:text-slate-400">Bjud in chefer och personalansvariga.</p>
-                 <div className="space-y-3 mt-4">
-                   {[1, 2, 3].map(i => (
-                     <div key={i} className="flex gap-3">
-                       <Input placeholder="E-post" className="flex-1" />
-                       <select className="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-lg px-3 text-sm dark:text-white">
-                         <option>Admin</option>
-                         <option>Personal</option>
-                       </select>
-                     </div>
-                   ))}
+              <div className="animate-fade-in space-y-6">
+                 <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Invite your team</h2>
+                    <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg">Collaborate with your managers and chefs.</p>
+                 </div>
+                 <div className="space-y-4 mt-8">
+                   <Input placeholder="Manager email" />
+                   <Input placeholder="Chef email" />
                  </div>
               </div>
             )}
 
             {step === 4 && (
-              <div className="animate-fade-in space-y-4">
-                <h2 className="text-2xl font-bold dark:text-white">Koppla Integrationer</h2>
-                <p className="text-slate-500 dark:text-slate-400">Aktivera betalningar och bokningssystem (Demo).</p>
-                <div className="space-y-3 mt-4">
-                  <div className="flex justify-between items-center p-3 border rounded-lg dark:border-dark-border">
-                    <span className="font-medium dark:text-white">Stripe / Kortbetalning</span>
-                    <button className="text-green-600 text-sm font-bold">Ansluten</button>
-                  </div>
-                  <div className="flex justify-between items-center p-3 border rounded-lg dark:border-dark-border">
-                    <span className="font-medium dark:text-white">Fortnox (Bokföring)</span>
-                    <button className="text-slate-900 dark:text-white text-sm underline">Anslut</button>
+              <div className="animate-fade-in space-y-6">
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Almost done</h2>
+                    <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg">Connect payment processing to start selling.</p>
+                </div>
+                <div className="space-y-4 mt-8">
+                  <div className="flex justify-between items-center p-5 border border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-[#635BFF] rounded-lg flex items-center justify-center text-white font-bold">S</div>
+                        <span className="font-bold text-gray-900 dark:text-white text-lg">Stripe</span>
+                    </div>
+                    <Badge color="green">Connected</Badge>
                   </div>
                 </div>
               </div>
             )}
             
-            <div className="mt-auto pt-8 flex justify-end gap-3">
-              {step > 1 && <Button variant="secondary" onClick={() => setStep(step - 1)}>Tillbaka</Button>}
-              <Button onClick={nextStep}>{step === 4 ? 'Slutför Setup' : 'Nästa steg'}</Button>
+            <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
+               <button 
+                onClick={() => setStep(Math.max(1, step - 1))}
+                className={`font-semibold underline text-gray-900 dark:text-white ${step === 1 ? 'invisible' : ''}`}
+               >
+                 Back
+               </button>
+              <Button onClick={nextStep} variant="black" className="px-8">
+                  {step === 4 ? 'Finish Setup' : 'Next'}
+              </Button>
             </div>
-          </div>
         </Card>
       </div>
     </div>
@@ -300,81 +336,97 @@ const OnboardingWizard = () => {
 
 const Dashboard = () => {
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-10 animate-fade-in">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-bold dark:text-white">Översikt</h1>
-          <p className="text-slate-500 dark:text-slate-400">Här är läget för restaurangen idag.</p>
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-2">Dashboard</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-lg">Overview of your restaurant's performance.</p>
         </div>
-        <div className="flex gap-2">
-           <Button variant="secondary">Exportera</Button>
-           <Button>Ny Bokning</Button>
+        <div className="flex gap-3">
+           <Button variant="secondary">Export Data</Button>
+           <Button variant="black">+ New Booking</Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {mockKPIs.map((kpi, idx) => (
-          <Card key={idx} className="p-5">
-            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{kpi.label}</p>
-            <div className="flex items-end justify-between mt-2">
-              <h3 className="text-2xl font-bold dark:text-white tracking-tight">{kpi.value}</h3>
-              <span className={`text-xs font-bold px-2 py-1 rounded-full ${kpi.trendUp ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                {kpi.trendUp ? '+' : '-'}{kpi.trend}%
-              </span>
+          <Card key={idx} className="flex flex-col justify-between h-40">
+            <div className="flex justify-between items-start">
+               <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{kpi.label}</p>
+               {kpi.trendUp ? (
+                   <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold">+{kpi.trend}%</span>
+               ) : (
+                   <span className="bg-rose-100 text-rose-800 px-2 py-1 rounded-full text-xs font-bold">-{kpi.trend}%</span>
+               )}
             </div>
+            <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white">{kpi.value}</h3>
           </Card>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-lg dark:text-white">Försäljning (Vecka)</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <Card className="lg:col-span-2 min-h-[400px]">
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="font-bold text-xl text-gray-900 dark:text-white">Revenue (Week)</h3>
+            <select className="bg-gray-100 dark:bg-gray-800 border-none rounded-lg px-3 py-1 text-sm font-medium outline-none cursor-pointer">
+                <option>This Week</option>
+                <option>Last Week</option>
+            </select>
           </div>
-          <div className="h-64 w-full">
+          <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={salesData}>
                 <defs>
                   <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#0f172a" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#0f172a" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#000000" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#000000" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} tickFormatter={(value) => `${value/1000}k`} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EBEBEB" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#717171', fontSize: 12, fontWeight: 500}} dy={15} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#717171', fontSize: 12, fontWeight: 500}} tickFormatter={(value) => `${value/1000}k`} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                  formatter={(value: number) => [`${value} kr`, 'Försäljning']}
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 6px 16px rgba(0,0,0,0.12)' }}
+                  formatter={(value: number) => [`${value} kr`, 'Revenue']}
                 />
-                <Area type="monotone" dataKey="value" stroke="#0f172a" strokeWidth={2} fillOpacity={1} fill="url(#colorSales)" />
+                <Area type="monotone" dataKey="value" stroke="#000000" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </Card>
 
         <Card>
-          <h3 className="font-bold text-lg mb-4 dark:text-white">Att göra (Alerts)</h3>
-          <div className="space-y-4">
-            <div className="flex gap-3 items-start p-3 bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/20">
-              <div className="mt-1 w-2 h-2 rounded-full bg-red-500 shrink-0" />
+          <div className="flex justify-between items-center mb-6">
+             <h3 className="font-bold text-xl text-gray-900 dark:text-white">Activity & Alerts</h3>
+             <Badge color="gray">3 New</Badge>
+          </div>
+          <div className="space-y-6">
+            <div className="flex gap-4 items-start pb-6 border-b border-gray-100 dark:border-gray-800 last:border-0">
+              <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
+                  <Package size={18} className="text-rose-600" />
+              </div>
               <div>
-                <p className="text-sm font-semibold text-red-800 dark:text-red-300">Lågt lager: Rödvin</p>
-                <p className="text-xs text-red-600 dark:text-red-400 mt-1">Endast 4 flaskor kvar. Beställ innan 14:00.</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">Low Stock Warning</p>
+                <p className="text-sm text-gray-500 mt-1 leading-relaxed">Red Wine (House) is below threshold. Only 4 bottles remaining.</p>
+                <button className="text-xs font-bold text-rose-600 mt-2 hover:underline">Restock</button>
               </div>
             </div>
-            <div className="flex gap-3 items-start p-3 bg-amber-50 dark:bg-amber-900/10 rounded-lg border border-amber-100 dark:border-amber-900/20">
-               <div className="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+            <div className="flex gap-4 items-start pb-6 border-b border-gray-100 dark:border-gray-800 last:border-0">
+               <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                  <Users size={18} className="text-amber-600" />
+              </div>
               <div>
-                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">Personalbrist Lördag</p>
-                <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">Sjukfrånvaro i köket. Behöver täckas.</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">Staff Shortage</p>
+                <p className="text-sm text-gray-500 mt-1 leading-relaxed">Kitchen staff down by 1 for Saturday night shift.</p>
               </div>
             </div>
-             <div className="flex gap-3 items-start p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
-               <div className="mt-1 w-2 h-2 rounded-full bg-slate-500 shrink-0" />
+             <div className="flex gap-4 items-start">
+               <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                  <Star size={18} className="text-blue-600" />
+              </div>
               <div>
-                <p className="text-sm font-semibold text-slate-800 dark:text-slate-300">Ny recension</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">5 stjärnor från "Erik G" på Google.</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">New Review</p>
+                <p className="text-sm text-gray-500 mt-1 leading-relaxed">5 stars from "Erik G" on Google.</p>
               </div>
             </div>
           </div>
@@ -392,8 +444,8 @@ const BookingsPage = () => {
 
   const updateStatus = (id: string, status: any) => {
     setBookings(bookings.map(b => b.id === id ? { ...b, status } : b));
-    if(status === 'arrived') showToast('Gäst incheckad');
-    if(status === 'noshow') showToast('Gäst markerad som No-show');
+    if(status === 'arrived') showToast('Guest checked in');
+    if(status === 'noshow') showToast('Guest marked as No-show');
   };
 
   // Drag and Drop Logic
@@ -434,86 +486,86 @@ const BookingsPage = () => {
     setBookings(newBookings);
     
     if (targetBooking) {
-      showToast(`Växlade plats: ${sourceBooking.customerName} <-> ${targetBooking.customerName}`);
+      showToast(`Swapped: ${sourceBooking.customerName} <-> ${targetBooking.customerName}`);
     } else {
-      showToast(`${sourceBooking.customerName} placerad på bord ${tableId}`);
+      showToast(`${sourceBooking.customerName} seated at Table ${tableId}`);
     }
   };
   
-  // Logic to drop back to unseated list
   const handleDropToUnseated = (e: React.DragEvent) => {
     e.preventDefault();
     const bookingId = e.dataTransfer.getData("bookingId");
     if(!bookingId) return;
-    
     setBookings(bookings.map(b => b.id === bookingId ? { ...b, table: undefined } : b));
-    showToast("Bokning borttagen från bord");
+    showToast("Booking removed from table");
   }
 
   const unseatedBookings = bookings.filter(b => !b.table && b.status !== 'cancelled' && b.status !== 'completed');
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold dark:text-white">Bokningar</h1>
-          <p className="text-slate-500 dark:text-slate-400">Hantera kvällens sittningar.</p>
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-2">Bookings</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-lg">Manage tonight's seating plan.</p>
         </div>
-        <div className="flex gap-2 bg-white dark:bg-dark-card p-1 rounded-lg border border-slate-200 dark:border-dark-border">
-          <button 
-            onClick={() => setView('list')}
-            className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${view === 'list' ? 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'}`}
-          >
-            Lista
-          </button>
-          <button 
-            onClick={() => setView('map')}
-            className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${view === 'map' ? 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'}`}
-          >
-            Bordskarta
-          </button>
+        <div className="flex gap-4 items-center">
+             <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-full">
+              <button 
+                onClick={() => setView('list')}
+                className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${view === 'list' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+              >
+                List
+              </button>
+              <button 
+                onClick={() => setView('map')}
+                className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${view === 'map' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+              >
+                Map
+              </button>
+            </div>
+            <Button onClick={() => setIsModalOpen(true)} variant="black">New Booking</Button>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>+ Ny Bokning</Button>
       </div>
 
       {view === 'list' ? (
-        <Card className="overflow-hidden p-0">
+        <Card className="overflow-hidden p-0 border-none shadow-soft">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium border-b border-slate-200 dark:border-slate-700">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-bold border-b border-gray-100 dark:border-gray-700 uppercase tracking-wider text-xs">
                 <tr>
-                  <th className="px-6 py-4">Tid</th>
-                  <th className="px-6 py-4">Gäst</th>
-                  <th className="px-6 py-4">Antal</th>
-                  <th className="px-6 py-4">Bord</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Åtgärd</th>
+                  <th className="px-8 py-5">Time</th>
+                  <th className="px-8 py-5">Guest</th>
+                  <th className="px-8 py-5">Size</th>
+                  <th className="px-8 py-5">Table</th>
+                  <th className="px-8 py-5">Status</th>
+                  <th className="px-8 py-5 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {bookings.map((booking) => (
-                  <tr key={booking.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td className="px-6 py-4 font-medium dark:text-white">{booking.time}</td>
-                    <td className="px-6 py-4 dark:text-slate-300">
-                      <div className="font-medium">{booking.customerName}</div>
-                      <div className="text-xs text-slate-400">ID: {booking.id}</div>
+                  <tr key={booking.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-8 py-6 font-bold text-gray-900 dark:text-white">{booking.time}</td>
+                    <td className="px-8 py-6 dark:text-gray-300">
+                      <div className="font-bold text-base text-gray-900 dark:text-white">{booking.customerName}</div>
+                      <div className="text-xs text-gray-400 mt-1">ID: {booking.id}</div>
                     </td>
-                    <td className="px-6 py-4 dark:text-slate-300">{booking.guests} pers</td>
-                    <td className="px-6 py-4 dark:text-slate-300">{booking.table || '-'}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-8 py-6 text-gray-600 dark:text-gray-400 font-medium">{booking.guests} ppl</td>
+                    <td className="px-8 py-6 font-bold text-gray-900 dark:text-white">{booking.table || '-'}</td>
+                    <td className="px-8 py-6">
                       <Badge color={
                         booking.status === 'arrived' ? 'green' : 
                         booking.status === 'noshow' ? 'red' : 'blue'
                       }>
-                        {booking.status === 'arrived' ? 'På plats' : 
-                         booking.status === 'noshow' ? 'No-show' : 'Bokad'}
+                        {booking.status === 'arrived' ? 'Seated' : 
+                         booking.status === 'noshow' ? 'No-show' : 'Booked'}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-8 py-6 text-right">
                       {booking.status === 'confirmed' && (
-                        <div className="flex justify-end gap-2">
-                          <button onClick={() => updateStatus(booking.id, 'arrived')} className="text-emerald-600 hover:underline text-xs font-medium">Checka in</button>
-                          <button onClick={() => updateStatus(booking.id, 'noshow')} className="text-red-600 hover:underline text-xs font-medium">No-show</button>
+                        <div className="flex justify-end gap-3">
+                          <button onClick={() => updateStatus(booking.id, 'arrived')} className="text-green-600 hover:text-green-700 font-bold text-sm">Check-in</button>
+                          <button onClick={() => updateStatus(booking.id, 'noshow')} className="text-gray-400 hover:text-red-500 font-medium text-sm transition-colors">No-show</button>
                         </div>
                       )}
                     </td>
@@ -524,12 +576,14 @@ const BookingsPage = () => {
           </div>
         </Card>
       ) : (
-        <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-12rem)]">
-          <Card className="flex-1 relative bg-slate-50 dark:bg-slate-900/50 overflow-hidden">
-             <div className="absolute top-4 left-4 z-10 bg-white/80 dark:bg-dark-card/80 backdrop-blur px-3 py-1 rounded-full text-xs font-medium border border-slate-200 dark:border-dark-border">
-               Dra och släpp för att flytta
+        <div className="flex flex-col lg:flex-row gap-8 h-[calc(100vh-14rem)]">
+          <Card className="flex-1 relative bg-gray-50 dark:bg-dark-card border-none shadow-inner overflow-hidden">
+             <div className="absolute top-6 left-6 z-10 bg-white/90 dark:bg-dark-card/90 backdrop-blur px-4 py-2 rounded-full text-xs font-bold shadow-sm border border-gray-100 flex items-center gap-2">
+               <MapPin size={14} className="text-primary"/> Drag & Drop to seat guests
              </div>
-             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-8 h-full overflow-y-auto">
+             
+             {/* Floor Plan Styled Grid */}
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 p-12 h-full overflow-y-auto">
                {[1,2,3,4,5,6,7,8,9,10,11,12].map(table => {
                  const booking = bookings.find(b => b.table === table.toString() && b.status !== 'completed' && b.status !== 'cancelled');
                  return (
@@ -539,25 +593,27 @@ const BookingsPage = () => {
                       onDrop={(e) => handleDropOnTable(e, table.toString())}
                       draggable={!!booking}
                       onDragStart={(e) => booking && handleDragStart(e, booking.id)}
-                      className={`aspect-square rounded-2xl flex flex-col items-center justify-center border-2 transition-all shadow-sm relative group
+                      className={`aspect-square rounded-[32px] flex flex-col items-center justify-center transition-all relative group
                      ${booking 
-                        ? 'bg-white border-blue-500 shadow-blue-100 dark:bg-dark-card dark:border-blue-500 cursor-grab active:cursor-grabbing' 
-                        : 'bg-white/50 border-dashed border-slate-300 dark:bg-dark-card/30 dark:border-slate-700 hover:border-slate-400 hover:bg-white dark:hover:bg-dark-card'}`}
+                        ? 'bg-white shadow-soft ring-4 ring-gray-50 dark:bg-gray-800 dark:ring-gray-700 cursor-grab active:cursor-grabbing' 
+                        : 'border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400'}`}
                    >
-                      <div className="absolute top-2 left-3 text-xs font-bold text-slate-300 dark:text-slate-600">
+                      <div className="absolute top-4 left-5 text-sm font-bold text-gray-300 dark:text-gray-600">
                         {table}
                       </div>
                       
                       {booking ? (
-                        <div className="text-center p-2 w-full">
-                          <div className={`w-8 h-8 rounded-full mb-2 mx-auto flex items-center justify-center text-xs font-bold ${booking.status === 'arrived' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                            {booking.guests}p
+                        <div className="text-center p-4 w-full">
+                          <div className={`w-10 h-10 rounded-full mb-3 mx-auto flex items-center justify-center text-sm font-bold ${booking.status === 'arrived' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+                            {booking.guests}
                           </div>
-                          <p className="font-semibold text-sm truncate w-full px-2 dark:text-white">{booking.customerName.split(' ')[0]}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{booking.time}</p>
+                          <p className="font-bold text-base truncate w-full px-2 text-gray-900 dark:text-white">{booking.customerName.split(' ')[0]}</p>
+                          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1 flex items-center justify-center gap-1">
+                             <Clock size={12} /> {booking.time}
+                          </p>
                         </div>
                       ) : (
-                         <div className="text-slate-300 dark:text-slate-600 text-xs font-medium uppercase tracking-wider">Ledigt</div>
+                         <div className="text-gray-300 dark:text-gray-600 text-xs font-bold uppercase tracking-widest">Available</div>
                       )}
                    </div>
                  )
@@ -566,61 +622,65 @@ const BookingsPage = () => {
           </Card>
           
           <Card 
-            className="w-full lg:w-80 flex flex-col gap-4 bg-slate-100 dark:bg-dark-card/50 border-dashed"
+            className="w-full lg:w-96 flex flex-col gap-4 bg-white dark:bg-dark-card border border-gray-100 shadow-soft"
             onDragOver={handleDragOver}
             onDrop={handleDropToUnseated}
           >
-             <div className="flex justify-between items-center">
-               <h3 className="font-bold dark:text-white">Ej placerade</h3>
-               <span className="bg-slate-200 dark:bg-slate-700 text-xs px-2 py-1 rounded-full font-bold">{unseatedBookings.length}</span>
+             <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-800">
+               <h3 className="font-bold text-lg text-gray-900 dark:text-white">Waiting List</h3>
+               <span className="bg-black text-white text-xs px-2.5 py-1 rounded-full font-bold">{unseatedBookings.length}</span>
              </div>
              
-             <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+             <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar">
                {unseatedBookings.length === 0 && (
-                 <p className="text-center text-slate-400 text-xs mt-10">Inga väntande bokningar</p>
+                 <div className="flex flex-col items-center justify-center h-40 text-gray-400">
+                    <CheckSquare size={32} className="mb-2 opacity-20"/>
+                    <p className="text-sm">All guests seated</p>
+                 </div>
                )}
                {unseatedBookings.map(b => (
                  <div 
                    key={b.id}
                    draggable
                    onDragStart={(e) => handleDragStart(e, b.id)}
-                   className="bg-white dark:bg-dark-card p-3 rounded-lg border border-slate-200 dark:border-dark-border shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md transition-all"
+                   className="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:shadow-md cursor-grab active:cursor-grabbing transition-all group"
                  >
-                   <div className="flex justify-between items-start mb-1">
-                     <span className="font-semibold text-sm dark:text-white">{b.customerName}</span>
-                     <span className="text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300">{b.time}</span>
+                   <div className="flex justify-between items-start mb-2">
+                     <span className="font-bold text-base text-gray-900 dark:text-white">{b.customerName}</span>
+                     <span className="text-xs font-bold bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg text-gray-900 dark:text-white">{b.time}</span>
                    </div>
-                   <div className="flex gap-2 text-xs text-slate-500 dark:text-slate-400">
-                     <span>{b.guests} personer</span>
-                     <span>•</span>
-                     <span className="capitalize">{b.status}</span>
+                   <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
+                     <div className="flex items-center gap-1.5">
+                        <Users size={14} /> {b.guests} guests
+                     </div>
+                     <MoreHorizontal size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                    </div>
                  </div>
                ))}
              </div>
              
-             <div className="mt-auto p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-900/30">
-               <p className="text-xs text-blue-700 dark:text-blue-300 text-center">
-                 Tips: Dra en bokning hit för att ta bort den från ett bord.
+             <div className="mt-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 text-center">
+               <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                 Drag a booking here to unseat
                </p>
              </div>
           </Card>
         </div>
       )}
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Ny Bokning">
-        <div className="space-y-4">
-          <Input label="Gästens namn" placeholder="Namn Namnsson" />
-          <div className="grid grid-cols-2 gap-4">
-            <Input label="Datum" type="date" />
-            <Input label="Tid" type="time" />
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="New Reservation">
+        <div className="space-y-6">
+          <Input label="Guest Name" placeholder="e.g. John Doe" />
+          <div className="grid grid-cols-2 gap-6">
+            <Input label="Date" type="date" />
+            <Input label="Time" type="time" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Input label="Antal gäster" type="number" />
-            <Input label="Telefon" placeholder="070..." />
+          <div className="grid grid-cols-2 gap-6">
+            <Input label="Guests" type="number" placeholder="2" />
+            <Input label="Phone" placeholder="+46..." />
           </div>
-          <Input label="Noteringar (Allergier etc.)" />
-          <Button fullWidth onClick={() => { setIsModalOpen(false); showToast("Bokning skapad!"); }}>Skapa Bokning</Button>
+          <Input label="Special Requests" placeholder="Allergies, table preference..." />
+          <Button fullWidth variant="black" onClick={() => { setIsModalOpen(false); showToast("Booking confirmed"); }}>Confirm Booking</Button>
         </div>
       </Modal>
     </div>
@@ -638,67 +698,100 @@ const POSPage = () => {
 
   const handleCheckout = () => {
     if(cart.length === 0) return;
-    showToast("Beställning skickad till köket!");
+    showToast("Order sent to kitchen");
     setCart([]);
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex gap-6 animate-fade-in">
-      <div className="flex-1 flex flex-col gap-6">
-        <div className="flex gap-2 overflow-x-auto pb-2">
+    <div className="h-[calc(100vh-8rem)] flex gap-8 animate-fade-in">
+      <div className="flex-1 flex flex-col gap-8">
+        {/* Categories as Tabs */}
+        <div className="flex gap-4 border-b border-gray-100 dark:border-gray-800 pb-1">
           {categories.map(cat => (
              <button 
                key={cat}
                onClick={() => setActiveCategory(cat)}
-               className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeCategory === cat ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'bg-white text-slate-600 border border-slate-200 dark:bg-dark-card dark:text-slate-400 dark:border-dark-border'}`}
+               className={`px-6 py-3 rounded-t-lg text-sm font-bold transition-all relative top-[1px] ${
+                 activeCategory === cat 
+                 ? 'text-black dark:text-white border-b-2 border-black dark:border-white' 
+                 : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+               }`}
              >
                {cat}
              </button>
           ))}
         </div>
         
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pr-2">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-y-auto pr-2 custom-scrollbar">
            {mockMenu.filter(i => i.category === activeCategory).map(item => (
              <div 
                 key={item.id} 
                 onClick={() => addToCart(item)}
-                className="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border p-4 rounded-xl cursor-pointer hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between h-32"
+                className="group bg-white dark:bg-dark-card border border-transparent hover:border-gray-200 dark:hover:border-gray-700 rounded-2xl cursor-pointer hover:shadow-soft transition-all flex flex-col justify-between h-64 overflow-hidden relative"
              >
-               <h4 className="font-semibold text-sm dark:text-white line-clamp-2">{item.name}</h4>
-               <div className="flex justify-between items-end">
-                 <span className="font-bold text-slate-900 dark:text-slate-200">{item.price} kr</span>
-                 <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300">+</div>
-               </div>
+                {/* Mock Image Placeholder */}
+                <div className="h-40 bg-gray-100 dark:bg-gray-800 w-full relative">
+                   <div className="absolute inset-0 flex items-center justify-center text-gray-300">
+                     <span className="text-4xl opacity-50">🍽️</span>
+                   </div>
+                   <div className="absolute top-3 right-3 bg-white dark:bg-black px-2 py-1 rounded-lg text-xs font-bold shadow-sm">
+                     {item.price} kr
+                   </div>
+                </div>
+
+                <div className="p-4">
+                  <h4 className="font-bold text-base text-gray-900 dark:text-white mb-1">{item.name}</h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{item.description}</p>
+                </div>
+                
+                {/* Add Button Overlay */}
+                <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                    <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center shadow-lg">
+                        +
+                    </div>
+                </div>
              </div>
            ))}
         </div>
       </div>
 
-      <Card className="w-80 flex flex-col p-0 overflow-hidden border-slate-300 shadow-xl dark:border-dark-border">
-         <div className="p-4 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-           <h3 className="font-bold dark:text-white">Nuvarande Nota</h3>
-           <p className="text-xs text-slate-500">Bord 4</p>
+      <Card className="w-96 flex flex-col p-0 overflow-hidden border border-gray-200 dark:border-gray-800 shadow-floating rounded-2xl h-full">
+         <div className="p-6 bg-white dark:bg-dark-card border-b border-gray-100 dark:border-gray-800">
+           <div className="flex justify-between items-center">
+             <h3 className="font-extrabold text-xl text-gray-900 dark:text-white">Current Order</h3>
+             <Badge color="gray">Table 4</Badge>
+           </div>
          </div>
-         <div className="flex-1 overflow-y-auto p-4 space-y-3">
+         <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-gray-50/50 dark:bg-dark-bg/50">
             {cart.length === 0 ? (
-              <div className="text-center text-slate-400 text-sm mt-10">Inga varor valda</div>
+              <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-2">
+                 <ShoppingCart size={40} className="opacity-20"/>
+                 <p className="text-sm font-medium">Cart is empty</p>
+              </div>
             ) : (
               cart.map((item, idx) => (
-                <div key={idx} className="flex justify-between text-sm">
-                  <span className="dark:text-slate-300">{item.name}</span>
-                  <span className="font-medium dark:text-white">{item.price} kr</span>
+                <div key={idx} className="flex justify-between items-center bg-white dark:bg-dark-card p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
+                  <div>
+                      <span className="block font-bold text-sm text-gray-900 dark:text-white">{item.name}</span>
+                      <span className="text-xs text-gray-500">{item.price} kr</span>
+                  </div>
+                  <button onClick={() => {
+                      const newCart = [...cart];
+                      newCart.splice(idx, 1);
+                      setCart(newCart);
+                  }} className="text-gray-300 hover:text-red-500 transition-colors">✕</button>
                 </div>
               ))
             )}
          </div>
-         <div className="p-4 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 space-y-3">
-            <div className="flex justify-between font-bold text-lg dark:text-white">
-              <span>Totalt</span>
-              <span>{total} kr</span>
+         <div className="p-6 bg-white dark:bg-dark-card border-t border-gray-100 dark:border-gray-800 space-y-4">
+            <div className="flex justify-between items-end">
+              <span className="text-gray-500 font-medium">Total</span>
+              <span className="text-2xl font-extrabold text-gray-900 dark:text-white">{total} kr</span>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <Button variant="secondary" onClick={() => setCart([])}>Rensa</Button>
-              <Button onClick={handleCheckout} disabled={cart.length === 0}>Betala</Button>
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="secondary" onClick={() => setCart([])}>Clear</Button>
+              <Button variant="black" onClick={handleCheckout} disabled={cart.length === 0}>Charge</Button>
             </div>
          </div>
       </Card>
@@ -708,47 +801,54 @@ const POSPage = () => {
 
 const StaffPage = () => {
   return (
-    <div className="space-y-6 animate-fade-in">
-       <div className="flex justify-between items-center">
+    <div className="space-y-10 animate-fade-in">
+       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-bold dark:text-white">Personal & Schema</h1>
-          <p className="text-slate-500 dark:text-slate-400">Hantera ditt team.</p>
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-2">Staff & Shifts</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-lg">Manage your team schedule.</p>
         </div>
-        <Button>+ Lägg till skift</Button>
+        <Button variant="black">Add Shift</Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
          {mockStaff.map(staff => (
-           <Card key={staff.id} className="flex items-center gap-4">
-              <img src={staff.avatar} alt={staff.name} className="w-12 h-12 rounded-full object-cover bg-slate-200" />
+           <Card key={staff.id} className="flex items-center gap-5 hover:border-gray-300 transition-colors">
+              <img src={staff.avatar} alt={staff.name} className="w-16 h-16 rounded-full object-cover border-4 border-gray-50 dark:border-gray-800" />
               <div className="flex-1">
-                 <h4 className="font-bold dark:text-white">{staff.name}</h4>
-                 <p className="text-xs text-slate-500 dark:text-slate-400">{staff.role}</p>
+                 <h4 className="font-bold text-lg text-gray-900 dark:text-white">{staff.name}</h4>
+                 <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{staff.role}</p>
               </div>
               <Badge color={staff.status === 'active' ? 'green' : staff.status === 'break' ? 'yellow' : 'gray'}>
-                {staff.status === 'active' ? 'Jobbar' : staff.status === 'break' ? 'Rast' : 'Ledig'}
+                {staff.status === 'active' ? 'On Shift' : staff.status === 'break' ? 'Break' : 'Off'}
               </Badge>
            </Card>
          ))}
       </div>
       
       <Card>
-        <h3 className="font-bold mb-4 dark:text-white">Veckans Schema</h3>
-        <div className="grid grid-cols-7 gap-px bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-          {['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'].map(day => (
-            <div key={day} className="bg-slate-50 dark:bg-slate-800 p-2 text-center text-xs font-bold text-slate-500 dark:text-slate-400">
+        <div className="flex justify-between items-center mb-6">
+            <h3 className="font-bold text-xl text-gray-900 dark:text-white">Weekly Schedule</h3>
+            <div className="flex gap-2">
+                <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50">←</button>
+                <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50">→</button>
+            </div>
+        </div>
+        <div className="grid grid-cols-7 border-t border-l border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+            <div key={day} className="bg-gray-50 dark:bg-gray-800/50 p-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 dark:border-gray-800">
               {day}
             </div>
           ))}
           {[...Array(7)].map((_, i) => (
-             <div key={i} className="bg-white dark:bg-dark-card h-32 p-2 relative group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+             <div key={i} className="bg-white dark:bg-dark-card min-h-[160px] p-2 border-r border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                 {i > 2 && i < 6 && (
-                   <div className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-xs p-1 rounded mb-1">
-                     16:00 - 23:00 (3)
+                   <div className="bg-blue-50 text-blue-900 dark:bg-blue-900/30 dark:text-blue-200 text-xs p-2 rounded-lg mb-2 font-bold shadow-sm border border-blue-100 dark:border-blue-800">
+                     16:00 - 23:00 <br/>
+                     <span className="font-normal opacity-80">3 Staff</span>
                    </div>
                 )}
                  {i === 4 && (
-                   <div className="bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 text-xs p-1 rounded mb-1">
+                   <div className="bg-purple-50 text-purple-900 dark:bg-purple-900/30 dark:text-purple-200 text-xs p-2 rounded-lg mb-2 font-bold shadow-sm border border-purple-100 dark:border-purple-800">
                      Extra: Kalle
                    </div>
                 )}
@@ -781,7 +881,7 @@ const AppContent = () => {
         <Route path="/bookings" element={<BookingsPage />} />
         <Route path="/pos" element={<POSPage />} />
         <Route path="/staff" element={<StaffPage />} />
-        <Route path="*" element={<div className="text-center mt-20 text-slate-500">Modul under utveckling (Demo)</div>} />
+        <Route path="*" element={<div className="flex items-center justify-center h-[50vh] text-gray-400 font-bold text-xl">Module in development</div>} />
       </Routes>
     </Layout>
   );
@@ -800,7 +900,7 @@ const AppProvider = ({ children }: { children?: React.ReactNode }) => {
   }, [darkMode]);
 
   const login = (email: string, role: 'admin' | 'staff') => {
-    setUser({ id: '1', name: role === 'admin' ? 'Ägare' : 'Personal', email, role });
+    setUser({ id: '1', name: role === 'admin' ? 'Owner' : 'Staff', email, role });
   };
 
   const logout = () => {

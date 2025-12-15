@@ -1,0 +1,5 @@
+{
+  "name": "Noory Restaurant OS",
+  "description": "A premium, Stripe-like Restaurant Operating System for managing bookings, staff, POS, and menu.",
+  "requestFramePermissions": []
+}

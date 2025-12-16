@@ -12,6 +12,24 @@ export interface RestaurantInfo {
   openHours: string;
 }
 
+export interface InventoryItem {
+  id: string;
+  name: string;
+  category: string;
+  quantity: number;
+  unit: 'kg' | 'liter' | 'st' | 'pkt';
+  minThreshold: number;
+  costPrice: number;
+  supplier: string;
+  lastUpdated: string;
+}
+
+export interface Modifier {
+  id: string;
+  name: string;
+  price: number;
+}
+
 export interface MenuItem {
   id: string;
   name: string;
@@ -19,6 +37,9 @@ export interface MenuItem {
   price: number;
   description: string;
   available: boolean;
+  image?: string;
+  ingredients?: string[]; // IDs from inventory
+  modifiers?: Modifier[];
 }
 
 export interface Booking {

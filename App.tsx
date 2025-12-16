@@ -4,12 +4,15 @@ import {
   LayoutDashboard, CalendarRange, ShoppingCart, Users, Menu as MenuIcon, 
   Settings, LogOut, Sun, Moon, Bell, CheckSquare, BarChart3, Star, Package,
   Search, ChevronRight, MapPin, Clock, MoreHorizontal, AlertTriangle, Plus,
-  Edit2, Trash2, ArrowUpRight, ArrowDownRight, Filter
+  Edit2, Trash2, ArrowUpRight, ArrowDownRight, Filter, Download, TrendingUp, TrendingDown, DollarSign
 } from 'lucide-react';
 import { User, MenuItem, InventoryItem } from './types';
 import { Button, Input, Card, Toast, Badge, Modal } from './components/UI';
-import { mockBookings, mockMenu, mockStaff, mockKPIs, salesData, mockInventory } from './services/mockData';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, AreaChart, Area } from 'recharts';
+import { mockBookings, mockMenu, mockStaff, mockKPIs, salesData, mockInventory, reportData } from './services/mockData';
+import { 
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, AreaChart, Area, 
+  PieChart, Pie, Cell, LineChart, Line, ScatterChart, Scatter, ZAxis, Legend 
+} from 'recharts';
 
 // --- Contexts ---
 
@@ -165,6 +168,333 @@ const Layout = ({ children }: { children?: React.ReactNode }) => {
 };
 
 // --- Pages ---
+
+const ReportsPage = () => {
+  const { showToast } = useApp();
+  const [activeTab, setActiveTab] = useState<'overview' | 'sales' | 'menu' | 'staff'>('overview');
+  const [dateRange, setDateRange] = useState('Last 7 Days');
+
+  const COLORS = ['#000000', '#FF385C', '#008489', '#FFC107', '#484848'];
+
+  // Prepare Menu Analysis Data
+  const menuAnalysisData = mockMenu.map(item => ({
+    name: item.name,
+    profit: (item.price - (item.costPrice || 0)),
+    volume: item.salesCount || 0,
+    costPercent: ((item.costPrice || 0) / item.price) * 100,
+    category: item.category
+  }));
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white dark:bg-dark-card p-3 border border-gray-100 dark:border-gray-800 rounded-xl shadow-soft">
+          <p className="font-bold text-gray-900 dark:text-white text-sm mb-1">{label}</p>
+          {payload.map((p: any, idx: number) => (
+             <div key={idx} className="flex items-center gap-2 text-xs">
+                <div className="w-2 h-2 rounded-full" style={{backgroundColor: p.color}} />
+                <span className="text-gray-500 capitalize">{p.name}:</span>
+                <span className="font-bold">{p.value}</span>
+             </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const StatCard = ({ title, value, subtext, trend, trendUp }: any) => (
+    <Card className="flex flex-col justify-between h-36">
+       <div className="flex justify-between items-start">
+         <p className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">{title}</p>
+         <span className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${trendUp ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+            {trendUp ? <TrendingUp size={12}/> : <TrendingDown size={12}/>}
+            {Math.abs(trend)}%
+         </span>
+       </div>
+       <div>
+         <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">{value}</h3>
+         <p className="text-xs text-gray-400 mt-1">{subtext}</p>
+       </div>
+    </Card>
+  );
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+       {/* Header */}
+       <div className="flex justify-between items-end">
+         <div>
+            <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-2">Reports & Analytics</h1>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">Deep dive into your restaurant's performance.</p>
+         </div>
+         <div className="flex gap-3">
+             <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                 {['overview', 'sales', 'menu', 'staff'].map((tab: any) => (
+                   <button 
+                     key={tab}
+                     onClick={() => setActiveTab(tab)}
+                     className={`px-4 py-2 rounded-md text-sm font-bold capitalize transition-all ${activeTab === tab ? 'bg-white dark:bg-dark-card shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900'}`}
+                   >
+                     {tab}
+                   </button>
+                 ))}
+             </div>
+             <select 
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
+                className="bg-white dark:bg-dark-card border border-gray-200 dark:border-gray-700 rounded-xl px-4 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-black"
+             >
+                <option>Last 7 Days</option>
+                <option>This Month</option>
+                <option>Last Month</option>
+             </select>
+             <Button variant="black" onClick={() => showToast("Exporting report...")}>
+                <Download size={18} />
+             </Button>
+         </div>
+       </div>
+
+       {activeTab === 'overview' && (
+         <div className="space-y-8 animate-slide-up">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+               <StatCard title="Total Revenue" value="372,000 kr" subtext="vs. 310,000 kr last period" trend={20} trendUp={true} />
+               <StatCard title="Food Cost (COGS)" value="28.5%" subtext="Target: 30%" trend={1.5} trendUp={true} />
+               <StatCard title="Labor Cost" value="32%" subtext="Target: 30%" trend={2} trendUp={false} />
+               <StatCard title="Net Profit" value="48,500 kr" subtext="13% Margin" trend={5} trendUp={true} />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+               <Card className="lg:col-span-2 min-h-[400px]">
+                  <h3 className="font-bold text-lg mb-6 text-gray-900 dark:text-white">Revenue vs. Costs</h3>
+                  <div className="h-80 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={reportData.revenueHistory}>
+                        <defs>
+                          <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#000000" stopOpacity={0.1}/>
+                            <stop offset="95%" stopColor="#000000" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EBEBEB" />
+                        <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fill: '#717171', fontSize: 12}} dy={10} />
+                        <YAxis axisLine={false} tickLine={false} tick={{fill: '#717171', fontSize: 12}} tickFormatter={(val) => `${val/1000}k`} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Area type="monotone" dataKey="revenue" stackId="1" stroke="#000000" strokeWidth={3} fill="url(#colorRev)" name="Revenue" />
+                        <Area type="monotone" dataKey="costs" stackId="2" stroke="#FF385C" strokeWidth={2} fill="none" name="Food Cost" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+               </Card>
+               <Card>
+                  <h3 className="font-bold text-lg mb-6 text-gray-900 dark:text-white">Category Split</h3>
+                  <div className="h-64 w-full relative">
+                     <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie 
+                            data={reportData.categorySales} 
+                            cx="50%" cy="50%" 
+                            innerRadius={60} 
+                            outerRadius={80} 
+                            paddingAngle={5} 
+                            dataKey="value"
+                          >
+                             {reportData.categorySales.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                             ))}
+                          </Pie>
+                          <Tooltip content={<CustomTooltip />} />
+                        </PieChart>
+                     </ResponsiveContainer>
+                     <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
+                        <span className="text-xs text-gray-500">Total</span>
+                        <span className="font-bold text-lg">100k</span>
+                     </div>
+                  </div>
+                  <div className="space-y-3 mt-4">
+                     {reportData.categorySales.map((item, idx) => (
+                        <div key={idx} className="flex justify-between items-center text-sm">
+                           <div className="flex items-center gap-2">
+                             <div className="w-3 h-3 rounded-full" style={{backgroundColor: COLORS[idx % COLORS.length]}} />
+                             <span className="text-gray-600 dark:text-gray-300">{item.name}</span>
+                           </div>
+                           <span className="font-bold">{Math.round((item.value/100000)*100)}%</span>
+                        </div>
+                     ))}
+                  </div>
+               </Card>
+            </div>
+         </div>
+       )}
+
+       {activeTab === 'menu' && (
+         <div className="space-y-8 animate-slide-up">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+               <Card className="min-h-[500px]">
+                  <div className="flex justify-between items-center mb-6">
+                     <div>
+                        <h3 className="font-bold text-lg text-gray-900 dark:text-white">Menu Engineering Matrix</h3>
+                        <p className="text-xs text-gray-500">Popularity vs. Profitability</p>
+                     </div>
+                  </div>
+                  <div className="h-96 w-full">
+                     <ResponsiveContainer width="100%" height="100%">
+                        <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EBEBEB" />
+                          <XAxis type="number" dataKey="volume" name="Sales Volume" unit=" qty" tick={{fill: '#717171', fontSize: 12}} />
+                          <YAxis type="number" dataKey="profit" name="Profit Margin" unit=" kr" tick={{fill: '#717171', fontSize: 12}} />
+                          <ZAxis type="category" dataKey="name" name="Dish" />
+                          <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />} />
+                          <Scatter name="Dishes" data={menuAnalysisData} fill="#000000">
+                             {menuAnalysisData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.profit > 100 && entry.volume > 100 ? '#008489' : entry.profit < 50 && entry.volume < 100 ? '#FF385C' : '#000000'} />
+                             ))}
+                          </Scatter>
+                          {/* Quadrant Lines */}
+                          <line x1={0} y1={70} x2={500} y2={70} stroke="#EBEBEB" strokeWidth={2} strokeDasharray="5 5" />
+                          <line x1={120} y1={0} x2={120} y2={200} stroke="#EBEBEB" strokeWidth={2} strokeDasharray="5 5" />
+                        </ScatterChart>
+                     </ResponsiveContainer>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-6">
+                     <div className="flex gap-2 items-center text-xs">
+                        <div className="w-3 h-3 rounded-full bg-secondary"></div>
+                        <span><strong>Stars:</strong> High Profit & Popular</span>
+                     </div>
+                     <div className="flex gap-2 items-center text-xs">
+                        <div className="w-3 h-3 rounded-full bg-primary"></div>
+                        <span><strong>Dogs:</strong> Low Profit & Unpopular</span>
+                     </div>
+                  </div>
+               </Card>
+               
+               <Card>
+                  <h3 className="font-bold text-lg mb-6 text-gray-900 dark:text-white">Item Breakdown</h3>
+                  <div className="overflow-x-auto">
+                     <table className="w-full text-sm text-left">
+                        <thead className="text-xs text-gray-500 uppercase bg-gray-50 dark:bg-gray-800 rounded-lg">
+                           <tr>
+                              <th className="px-4 py-3">Dish</th>
+                              <th className="px-4 py-3 text-right">Cost %</th>
+                              <th className="px-4 py-3 text-right">Margin</th>
+                              <th className="px-4 py-3 text-right">Sold</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           {menuAnalysisData.sort((a,b) => b.profit - a.profit).slice(0, 8).map((item, idx) => (
+                              <tr key={idx} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                 <td className="px-4 py-3 font-medium">{item.name}</td>
+                                 <td className="px-4 py-3 text-right">
+                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${item.costPercent > 35 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                       {item.costPercent.toFixed(1)}%
+                                    </span>
+                                 </td>
+                                 <td className="px-4 py-3 text-right font-bold">{item.profit} kr</td>
+                                 <td className="px-4 py-3 text-right">{item.volume}</td>
+                              </tr>
+                           ))}
+                        </tbody>
+                     </table>
+                  </div>
+               </Card>
+            </div>
+         </div>
+       )}
+
+       {activeTab === 'sales' && (
+         <div className="space-y-8 animate-slide-up">
+            <Card>
+               <h3 className="font-bold text-lg mb-6 text-gray-900 dark:text-white">Hourly Traffic Heatmap</h3>
+               <div className="h-64 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                     <BarChart data={reportData.hourlyTraffic}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EBEBEB" />
+                        <XAxis dataKey="hour" axisLine={false} tickLine={false} tick={{fill: '#717171', fontSize: 12}} />
+                        <YAxis axisLine={false} tickLine={false} tick={{fill: '#717171', fontSize: 12}} />
+                        <Tooltip cursor={{fill: '#F7F7F7'}} content={<CustomTooltip />} />
+                        <Bar dataKey="guests" fill="#000000" radius={[4, 4, 0, 0]} barSize={40} />
+                     </BarChart>
+                  </ResponsiveContainer>
+               </div>
+               <p className="text-xs text-gray-500 mt-4 text-center">Peak operating hours are between 18:00 and 20:00.</p>
+            </Card>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="flex flex-col justify-center items-center p-10 text-center">
+                   <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                      <Users size={32} className="text-gray-700 dark:text-white" />
+                   </div>
+                   <h3 className="text-4xl font-extrabold text-gray-900 dark:text-white">482</h3>
+                   <p className="text-gray-500 font-bold mt-2">Total Guests This Week</p>
+                   <p className="text-xs text-green-600 font-bold mt-1">+12% vs last week</p>
+                </Card>
+                <Card className="flex flex-col justify-center items-center p-10 text-center">
+                   <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                      <DollarSign size={32} className="text-gray-700 dark:text-white" />
+                   </div>
+                   <h3 className="text-4xl font-extrabold text-gray-900 dark:text-white">772 kr</h3>
+                   <p className="text-gray-500 font-bold mt-2">Average Order Value</p>
+                   <p className="text-xs text-red-600 font-bold mt-1">-3% vs last week</p>
+                </Card>
+            </div>
+         </div>
+       )}
+       
+       {activeTab === 'staff' && (
+         <div className="space-y-8 animate-slide-up">
+            <Card>
+               <h3 className="font-bold text-lg mb-6 text-gray-900 dark:text-white">Staff Performance Leaderboard</h3>
+               <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                     <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 uppercase text-xs">
+                        <tr>
+                           <th className="px-6 py-4 rounded-l-lg">Staff Member</th>
+                           <th className="px-6 py-4">Hours Worked</th>
+                           <th className="px-6 py-4">Total Sales</th>
+                           <th className="px-6 py-4">Sales / Hour</th>
+                           <th className="px-6 py-4 rounded-r-lg">Tips Generated</th>
+                        </tr>
+                     </thead>
+                     <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                        {reportData.staffPerformance.map((staff, idx) => (
+                           <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                              <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{staff.name}</td>
+                              <td className="px-6 py-4">{staff.hours} h</td>
+                              <td className="px-6 py-4">{staff.sales} kr</td>
+                              <td className="px-6 py-4 font-bold text-green-600">{Math.round(staff.sales / staff.hours)} kr/h</td>
+                              <td className="px-6 py-4">{staff.tips} kr</td>
+                           </tr>
+                        ))}
+                     </tbody>
+                  </table>
+               </div>
+            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                    <h4 className="font-bold mb-2">Labor Cost Analysis</h4>
+                    <p className="text-sm text-gray-500 mb-6">Labor cost relative to revenue over the last 7 days.</p>
+                    <div className="h-48 w-full bg-gray-50 dark:bg-gray-800 rounded-xl flex items-center justify-center text-gray-400">
+                       <BarChart width={300} height={150} data={reportData.revenueHistory}>
+                          <Bar dataKey="labor" fill="#484848" />
+                       </BarChart>
+                    </div>
+                </Card>
+                <Card>
+                   <h4 className="font-bold mb-2">Top Performer</h4>
+                   <div className="flex items-center gap-4 mt-4">
+                      <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center text-3xl">🏆</div>
+                      <div>
+                         <h3 className="text-2xl font-extrabold">Maja Bar</h3>
+                         <p className="text-gray-500">Highest Sales/Hour (1,485 kr)</p>
+                         <Button variant="black" className="mt-2 text-xs py-1 px-3">View Profile</Button>
+                      </div>
+                   </div>
+                </Card>
+            </div>
+         </div>
+       )}
+    </div>
+  );
+};
 
 const InventoryPage = () => {
   const { showToast } = useApp();
@@ -1229,6 +1559,7 @@ const AppContent = () => {
         <Route path="/staff" element={<StaffPage />} />
         <Route path="/inventory" element={<InventoryPage />} />
         <Route path="/menu" element={<MenuPage />} />
+        <Route path="/reports" element={<ReportsPage />} />
         <Route path="*" element={<div className="flex items-center justify-center h-[50vh] text-gray-400 font-bold text-xl">Module in development</div>} />
       </Routes>
     </Layout>

@@ -35,6 +35,8 @@ export interface MenuItem {
   name: string;
   category: 'Förrätt' | 'Varmrätt' | 'Efterrätt' | 'Dryck';
   price: number;
+  costPrice?: number; // Added for margin calculation
+  salesCount?: number; // Added for popularity analysis
   description: string;
   available: boolean;
   image?: string;

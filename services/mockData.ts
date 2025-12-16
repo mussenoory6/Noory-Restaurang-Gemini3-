@@ -17,44 +17,45 @@ export const mockInventory: InventoryItem[] = [
   { id: 'I7', name: 'IPA Fat (30L)', category: 'Dryck', quantity: 2, unit: 'st', minThreshold: 2, costPrice: 1200, supplier: 'Bryggeriet', lastUpdated: '2023-10-15' },
 ];
 
+// Added costPrice and salesCount for Reports
 export const mockMenu: MenuItem[] = [
   { 
-    id: '1', name: 'Löjromstoast', category: 'Förrätt', price: 195, description: 'Kalix löjrom, smetana, rödlök, brioche', available: true,
+    id: '1', name: 'Löjromstoast', category: 'Förrätt', price: 195, costPrice: 65, salesCount: 142, description: 'Kalix löjrom, smetana, rödlök, brioche', available: true,
     modifiers: [{id: 'm1', name: 'Extra löjrom', price: 95}],
     ingredients: ['I2', 'I5']
   },
   { 
-    id: '2', name: 'Råbiff', category: 'Förrätt', price: 165, description: 'Svensk oxrulle, dijonnaise, kapris, äggula', available: true,
+    id: '2', name: 'Råbiff', category: 'Förrätt', price: 165, costPrice: 55, salesCount: 98, description: 'Svensk oxrulle, dijonnaise, kapris, äggula', available: true,
     ingredients: ['I1']
   },
   { 
-    id: '3', name: 'Grillad Röding', category: 'Varmrätt', price: 295, description: 'Sandefjordsås, forellrom, dillpotatis, fänkål', available: true,
+    id: '3', name: 'Grillad Röding', category: 'Varmrätt', price: 295, costPrice: 85, salesCount: 76, description: 'Sandefjordsås, forellrom, dillpotatis, fänkål', available: true,
     ingredients: ['I4', 'I5']
   },
   { 
-    id: '4', name: 'Oxfilé Provencale', category: 'Varmrätt', price: 345, description: 'Råstekt potatis, vitlökssmör, haricots verts', available: true,
+    id: '4', name: 'Oxfilé Provencale', category: 'Varmrätt', price: 345, costPrice: 120, salesCount: 180, description: 'Råstekt potatis, vitlökssmör, haricots verts', available: true,
     ingredients: ['I1', 'I4']
   },
   { 
-    id: '5', name: 'Wallenbergare', category: 'Varmrätt', price: 225, description: 'Potatispuré, gröna ärtor, rårörda lingon, skirat smör', available: true,
+    id: '5', name: 'Wallenbergare', category: 'Varmrätt', price: 225, costPrice: 60, salesCount: 210, description: 'Potatispuré, gröna ärtor, rårörda lingon, skirat smör', available: true,
     ingredients: ['I4', 'I5']
   },
   { 
-    id: '6', name: 'Tryffelpasta', category: 'Varmrätt', price: 245, description: 'Färsk tryffel, parmesan, grädde, linguine', available: true,
+    id: '6', name: 'Tryffelpasta', category: 'Varmrätt', price: 245, costPrice: 50, salesCount: 155, description: 'Färsk tryffel, parmesan, grädde, linguine', available: true,
     ingredients: ['I5', 'I6']
   },
   { 
-    id: '7', name: 'Crème Brûlée', category: 'Efterrätt', price: 115, description: 'Klassisk vanilj', available: true,
+    id: '7', name: 'Crème Brûlée', category: 'Efterrätt', price: 115, costPrice: 20, salesCount: 120, description: 'Klassisk vanilj', available: true,
     ingredients: ['I5']
   },
   { 
-    id: '8', name: 'Chokladfondant', category: 'Efterrätt', price: 125, description: 'Vaniljglass, hallon', available: true,
+    id: '8', name: 'Chokladfondant', category: 'Efterrätt', price: 125, costPrice: 25, salesCount: 85, description: 'Vaniljglass, hallon', available: true,
     ingredients: []
   },
-  { id: '9', name: 'Husets Rödvin', category: 'Dryck', price: 110, description: 'Glas', available: false, ingredients: ['I3'] },
-  { id: '10', name: 'IPA Fat', category: 'Dryck', price: 89, description: '40cl', available: true, ingredients: ['I7'] },
-  { id: '11', name: 'Cola Zero', category: 'Dryck', price: 39, description: '33cl', available: true },
-  { id: '12', name: 'Kaffe', category: 'Dryck', price: 35, description: 'Brygg', available: true },
+  { id: '9', name: 'Husets Rödvin', category: 'Dryck', price: 110, costPrice: 25, salesCount: 450, description: 'Glas', available: false, ingredients: ['I3'] },
+  { id: '10', name: 'IPA Fat', category: 'Dryck', price: 89, costPrice: 22, salesCount: 320, description: '40cl', available: true, ingredients: ['I7'] },
+  { id: '11', name: 'Cola Zero', category: 'Dryck', price: 39, costPrice: 8, salesCount: 150, description: '33cl', available: true },
+  { id: '12', name: 'Kaffe', category: 'Dryck', price: 35, costPrice: 2, salesCount: 200, description: 'Brygg', available: true },
 ];
 
 export const mockBookings: Booking[] = [
@@ -75,6 +76,7 @@ export const mockStaff: Staff[] = [
   { id: 'S5', name: 'Maja Bar', role: 'Bartender', status: 'active', avatar: 'https://picsum.photos/100/100?random=5' },
 ];
 
+// Simple sales for sparklines
 export const salesData = [
   { name: 'Mån', value: 24000 },
   { name: 'Tis', value: 21000 },
@@ -84,3 +86,36 @@ export const salesData = [
   { name: 'Lör', value: 92000 },
   { name: 'Sön', value: 38000 },
 ];
+
+// Comprehensive Reporting Data
+export const reportData = {
+  revenueHistory: [
+    { date: '1 Nov', revenue: 32000, costs: 9600, labor: 8000 },
+    { date: '2 Nov', revenue: 28000, costs: 8400, labor: 7500 },
+    { date: '3 Nov', revenue: 45000, costs: 13500, labor: 11000 },
+    { date: '4 Nov', revenue: 52000, costs: 15600, labor: 12000 },
+    { date: '5 Nov', revenue: 85000, costs: 25500, labor: 18000 },
+    { date: '6 Nov', revenue: 92000, costs: 27600, labor: 19500 },
+    { date: '7 Nov', revenue: 38000, costs: 11400, labor: 9500 },
+  ],
+  categorySales: [
+    { name: 'Varmrätt', value: 45000 },
+    { name: 'Dryck', value: 32000 },
+    { name: 'Förrätt', value: 15000 },
+    { name: 'Efterrätt', value: 8000 },
+  ],
+  hourlyTraffic: [
+    { hour: '16:00', guests: 12 },
+    { hour: '17:00', guests: 35 },
+    { hour: '18:00', guests: 68 },
+    { hour: '19:00', guests: 85 },
+    { hour: '20:00', guests: 72 },
+    { hour: '21:00', guests: 45 },
+    { hour: '22:00', guests: 20 },
+  ],
+  staffPerformance: [
+    { name: 'Sara Servis', sales: 45000, hours: 32, tips: 4200 },
+    { name: 'Pelle Plock', sales: 28000, hours: 28, tips: 1800 },
+    { name: 'Maja Bar', sales: 52000, hours: 35, tips: 5100 },
+  ]
+};
